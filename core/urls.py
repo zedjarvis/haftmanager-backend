@@ -7,14 +7,32 @@ from django.urls import path, re_path
 from django.conf.urls import include
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    # Optional UI:
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
+    ),
 ]
 
-API_AUTH = r"^api/auth"
+API_AUTH = r"^api/auth/"
 API_BASE = r"^api/v1/"
 
+# API URLS
 urlpatterns += [
     re_path(API_AUTH, include("rest_framework.urls")),
     re_path(API_AUTH, include("djoser.urls")),

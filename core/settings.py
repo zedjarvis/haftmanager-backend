@@ -52,20 +52,21 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "django_celery_beat",
+    "django_celery_beat",  # TODO: CONFIGURE
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
-    "djoser",
+    "djoser",  # TODO: SOCIAL AUTH CONFIG
     "drf_spectacular",
-    "notifications",
+    "drf_spectacular_sidecar",
+    "notifications",  # TODO: WORK ON NOTIFICATIONS
     "django_cleanup",
     "imagekit",
     "storages",
     "phonenumber_field",
 ]
 
-LOCAL_APPS = ["apps.accounts"]
+LOCAL_APPS = ["apps.users", "apps.accounts"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -117,7 +118,12 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "haftmanager-backend API",
     "DESCRIPTION": "Documentation of API endpoints of haftmanager-backend",
     "VERSION": "1.0.0",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE": True,
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 DJOSER = {
@@ -127,10 +133,10 @@ DJOSER = {
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
     "HIDE_USERS": True,
-    # "SERIALIZERS": {
-    #     "user": "apps.restful_api.serializers.accounts.UserSerializer",
-    #     "current_user": "apps.restful_api.serializers.accounts.UserSerializer",
-    # },
+    "SERIALIZERS": {
+        "user": "apps.users.api.serializers.UserSerializer",
+        "current_user": "apps.users.api.serializers.UserSerializer",
+    },
 }
 
 SIMPLE_JWT = {
@@ -226,7 +232,6 @@ DATABASES = {
 # https://docs.djangoproject.com/en/dev/ref/settings/#password-hashers
 PASSWORD_HASHERS = [
     # https://docs.djangoproject.com/en/dev/topics/auth/passwords/#using-argon2-with-django
-    "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",

@@ -55,12 +55,23 @@ class Profile(TimeStampedModel, SoftDeletableModel):
         options={"quality": 80},
     )
 
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"
+
+    def __str__(self) -> str:
+        return self.user.email
+
 
 class Settings(TimeStampedModel):
     THEMES = Choices("dark", "light")
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
-    theme = StatusField(choises_name="THEMES", default="dark")
+    theme = StatusField(choices_name="THEMES", default="dark")
+
+    class Meta:
+        verbose_name = "User Setting"
+        verbose_name_plural = "User Settings"
 
     def __str__(self) -> str:
         return self.user.email

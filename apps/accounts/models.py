@@ -20,6 +20,9 @@ def account_directory_path(instance, filename):
 class Industry(TimeStampedModel):
     name = models.CharField(max_length=255)
 
+    class Meta:
+        verbose_name_plural = "Industries"
+
     def __str__(self) -> str:
         return self.name
 
@@ -41,7 +44,7 @@ class Account(TimeStampedModel, SoftDeletableModel):
         format="JPEG",
         options={"quality": 80},
     )
-    industry = models.ManyToManyField(Industry)
+    industry = models.ManyToManyField(Industry, blank=True)
 
     def __str__(self):
         return self.name
@@ -109,7 +112,9 @@ class Email(TimeStampedModel, SoftDeletableModel):
         # filter primary email address
         primary_emails = self.account.emails.filter(is_primary=True).count()
         # raise a validation error if there is already a primary phone for this account
-        if self.is_primary and primary_emails > 0:
+        if (
+            self.is_primary and primary_emails > 0
+        ):  # TODO: FIX THIS BUG(first check if email is being added before validating)
             raise ValidationError("An account can only have one primary email address")
         # raise a validation error if this account already has 2 email addresses
         if not self.pk and self.account.emails.count() >= 2:

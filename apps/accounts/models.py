@@ -66,23 +66,25 @@ class Phone(TimeStampedModel):
         ]
 
     def __str__(self) -> str:
-        return self.number
+        return f"{self.phone_number}"
 
     def clean(self) -> None:
         super().clean()
         # filter primary phone number
         primary_phones = self.account.phones.filter(is_primary=True).count()
-        # raise a validation error if there is already a primary phone for this account
-        if self.is_primary and primary_phones > 0:
-            raise ValidationError("An account can only have one primary phone number")
-        # raise a validation error if this account already has 2 phone numbers
-        if not self.pk and self.account.phones.count() >= 2:
-            raise ValidationError(
-                "An account can only have a maximum on 2 phone numbers"
-            )
-        # if no primary phone, assign the first one
-        if not self.pk and primary_phones == 0:
-            self.is_primary = True
+
+        if not self.pk:
+            account_phones = self.account.phones.count()
+            # raise a validation error if this account already has 2 phone numbers
+            if account_phones >= 2:
+                raise ValidationError(
+                    "An account can only have a maximum of 2 phone numbers"
+                )
+            # raise a validation error if there is already a primary phone for this account
+            if self.is_primary and primary_phones > 0:
+                raise ValidationError(
+                    "An account can only have one primary phone number"
+                )
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -111,19 +113,18 @@ class Email(TimeStampedModel, SoftDeletableModel):
         super().clean()
         # filter primary email address
         primary_emails = self.account.emails.filter(is_primary=True).count()
-        # raise a validation error if there is already a primary phone for this account
-        if (
-            self.is_primary and primary_emails > 0
-        ):  # TODO: FIX THIS BUG(first check if email is being added before validating)
-            raise ValidationError("An account can only have one primary email address")
-        # raise a validation error if this account already has 2 email addresses
-        if not self.pk and self.account.emails.count() >= 2:
-            raise ValidationError(
-                "An account can only have a maximum on 2 email addresses"
-            )
-        # if no primary email, assign the first one
-        if not self.pk and primary_emails == 0:
-            self.is_primary = True
+        if not self.pk:
+            account_emails = self.account.emails.count()
+            # raise a validation error if this account already has 2 phone numbers
+            if account_emails >= 2:
+                raise ValidationError(
+                    "An account can only have a maximum of 2 email addresses."
+                )
+            # raise a validation error if there is already a primary phone for this account
+            if self.is_primary and primary_emails > 0:
+                raise ValidationError(
+                    "An account can only have one primary eamil adress."
+                )
 
     def save(self, *args, **kwargs):
         self.clean()

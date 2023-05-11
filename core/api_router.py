@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from apps.accounts.api import views as AccountViews
 from apps.users.api import views as UserViews
+from apps.notify.api import views as NotifyViews
 
 if settings.DEBUG:
     router = DefaultRouter()
@@ -20,6 +21,9 @@ router.register("account_emails", AccountViews.EmailViewset)
 router.register("users", UserViews.UserViewset)
 router.register("user_profiles", UserViews.ProfileViewset)
 router.register("user_settings", UserViews.SettingsViewset)
+
+# Notification viewsets
+router.register("notifications", NotifyViews.NotificationViewset)
 
 
 app_name = "api"

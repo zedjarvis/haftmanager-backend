@@ -3,6 +3,7 @@ Django settings for core project.
 """
 
 import re
+import socket
 from pathlib import Path
 from decouple import config, Csv
 from datetime import timedelta
@@ -66,7 +67,7 @@ THIRD_PARTY_APPS = [
     "phonenumber_field",
 ]
 
-LOCAL_APPS = ["apps.users", "apps.accounts"]
+LOCAL_APPS = ["apps.users", "apps.accounts", "apps.notify"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -127,9 +128,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 DJOSER = {
-    "PASSWORD_RESET_CONFIRM_URL": "#/password/reset/confirm/{uid}/{token}",
-    "USERNAME_RESET_CONFIRM_URL": "#/username/reset/confirm/{uid}/{token}",
-    "ACTIVATION_URL": "#/activate/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "accounts/password/reset/confirm/{uid}/{token}",
+    "USERNAME_RESET_CONFIRM_URL": "accounts/username/reset/confirm/{uid}/{token}",
+    "ACTIVATION_URL": "accounts/activate/{uid}/{token}",
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
     "HIDE_USERS": True,
@@ -309,3 +310,41 @@ LOGGING = {
     },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
+
+
+RUN_MODE = config("RUN_MODE", default="development")
+
+if RUN_MODE == "production":
+    # ==============================================================================
+    # EMAIL CONFIGURATIONS
+    # ===============================================================================
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST_ADDR = config("EMAIL_HOST")
+    EMAIL_HOST = socket.gethostbyname(EMAIL_HOST_ADDR)  # Speed up sending emails
+    EMAIL_PORT = 465
+    EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+    EMAIL_USE_SSL = True
+
+    # ==============================================================================
+    # SECURITY CONFIGURATIONS
+    # ==============================================================================
+
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+
+    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7 * 52  # one year
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+    SESSION_COOKIE_SECURE = True
+
+else:
+    # send emails to console
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = "webmaster@haftstudio.ke"

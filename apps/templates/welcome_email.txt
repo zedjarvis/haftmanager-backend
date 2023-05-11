@@ -1,0 +1,16 @@
+Welcome to Haft Manager
+
+
+Hello {{ user.first_name }},
+We are thrilled to have you on board with HaftManager, a project management software designed to help you manage your
+projects, tasks, and teams with ease. Our app helps you track everything from project progress and task assignments to
+attachments, comments, and invoices. You can also manage your team, track worker hours, and monitor costs per task and
+project.
+
+We understand that managing projects can be challenging, and that's why we're here to make it easier for you. With
+HaftManager, you can focus on what matters most - achieving your project goals.
+
+We look forward to working with you and hope you have a great experience using our app.
+
+Best regards,
+The HaftManager Team

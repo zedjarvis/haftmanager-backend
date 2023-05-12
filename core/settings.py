@@ -151,6 +151,14 @@ PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_REGION = "KE"
 PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
 
+# CELERY related settings
+BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "Africa/Nairobi"
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -215,6 +223,13 @@ IGNORABLE_404_URLS = [
     re.compile(r"^/favicon\.ico$"),
     re.compile(r"^/robots\.txt$"),
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+    }
+}
 
 DATABASES = {
     "default": {

@@ -1,18 +1,16 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
-from model_utils.models import TimeStampedModel, SoftDeletableModel
-from phonenumber_field.modelfields import PhoneNumberField
-from model_utils.models import TimeStampedModel, SoftDeletableModel
-from model_utils.fields import StatusField
-from model_utils import Choices
 from imagekit.models import (
     ProcessedImageField,
 )  # imagekit for processings images in django
 from imagekit.processors import ResizeToFill
+from model_utils import Choices
+from model_utils.fields import StatusField
+from model_utils.models import SoftDeletableModel, TimeStampedModel
+from phonenumber_field.modelfields import PhoneNumberField
 
+from apps.accounts.models import Account
 from apps.users.managers import UserManager
 
 
@@ -32,6 +30,16 @@ class User(AbstractUser, TimeStampedModel, SoftDeletableModel):
     last_name = models.CharField(_("Last Name of User"), blank=True, max_length=255)
     email = models.EmailField(_("Email address"), unique=True)
     username = None  # type: ignore
+    account = models.ForeignKey(
+        Account, on_delete=models.SET_NULL, blank=True, null=True, related_name="users"
+    )
+    created_by = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="users_created",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

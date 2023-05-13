@@ -33,9 +33,7 @@ DEBUG_PROPAGATE_EXCEPTIONS = True
 
 INTERNAL_IPS = ["127.0.0.1"]
 
-ALLOWED_HOSTS = [
-    "*"
-]  # config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
@@ -53,6 +51,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "mptt",
     "django_celery_beat",  # TODO: CONFIGURE
     "rest_framework",
     "rest_framework_simplejwt",

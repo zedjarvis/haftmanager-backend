@@ -5,7 +5,7 @@ from celery import Celery
 # set the default django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
-app = Celery("haftmanager_backend", broker="redis://localhost")
+app = Celery("haftmanager-backend", broker="redis://localhost")
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
@@ -19,4 +19,4 @@ app.autodiscover_tasks()
 
 @app.task(bind=True)
 def debug_task(self):
-    print("Request: {0!r}".format(self.request))
+    print(f"Request: {self.request!r}")

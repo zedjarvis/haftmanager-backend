@@ -1,15 +1,12 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from phonenumber_field.modelfields import PhoneNumberField
-from model_utils.models import TimeStampedModel, SoftDeletableModel
-from imagekit.models import (
-    ProcessedImageField,
-)  # imagekit for processings images in django
+from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from model_utils.models import SoftDeletableModel, TimeStampedModel
 from mptt.models import MPTTModel, TreeManyToManyField
+from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
@@ -43,7 +40,6 @@ class Account(MPTTModel, TimeStampedModel, SoftDeletableModel):
         _("Shipping Address"), max_length=255, blank=True
     )
     logo = ProcessedImageField(
-        _("Business Logo"),
         upload_to=account_directory_path,
         processors=[ResizeToFill(200, 200)],
         blank=True,
@@ -51,9 +47,7 @@ class Account(MPTTModel, TimeStampedModel, SoftDeletableModel):
         format="JPEG",
         options={"quality": 80},
     )
-    industry = TreeManyToManyField(
-        _("Business Category/Industry"), Industry, blank=True, related_name="accounts"
-    )
+    industry = TreeManyToManyField(Industry, blank=True, related_name="accounts")
     users = TreeManyToManyField(User, blank=True, related_name="account")
 
     def __str__(self):

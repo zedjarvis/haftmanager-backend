@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -8,8 +9,11 @@ from imagekit.models import (
     ProcessedImageField,
 )  # imagekit for processings images in django
 from imagekit.processors import ResizeToFill
+from mptt.models import MPTTModel, TreeManyToManyField
 
 # Create your models here.
+
+User = get_user_model()
 
 
 def account_directory_path(instance, filename):
@@ -17,7 +21,7 @@ def account_directory_path(instance, filename):
     return f"accounts/{instance.name}-{instance.pk}/{filename}"
 
 
-class Industry(TimeStampedModel):
+class Industry(TimeStampedModel, SoftDeletableModel):
     name = models.CharField(max_length=255)
 
     class Meta:
@@ -28,15 +32,18 @@ class Industry(TimeStampedModel):
 
 
 # different accounts[companies/individual]
-class Account(TimeStampedModel, SoftDeletableModel):
-    name = models.CharField(max_length=255)
-    website = models.URLField(max_length=255)
+class Account(MPTTModel, TimeStampedModel, SoftDeletableModel):
+    name = models.CharField(_("Name of Company or Individual"), max_length=255)
+    website = models.URLField(_("Your Website"), max_length=255)
     description = models.TextField(
         _("A short description of company or individual"), blank=True, null=True
     )
-    billing_address = models.CharField(max_length=255, blank=True)
-    shipping_address = models.CharField(max_length=255, blank=True)
+    billing_address = models.CharField(_("Billing Address"), max_length=255, blank=True)
+    shipping_address = models.CharField(
+        _("Shipping Address"), max_length=255, blank=True
+    )
     logo = ProcessedImageField(
+        _("Business Logo"),
         upload_to=account_directory_path,
         processors=[ResizeToFill(200, 200)],
         blank=True,
@@ -44,7 +51,10 @@ class Account(TimeStampedModel, SoftDeletableModel):
         format="JPEG",
         options={"quality": 80},
     )
-    industry = models.ManyToManyField(Industry, blank=True)
+    industry = TreeManyToManyField(
+        _("Business Category/Industry"), Industry, blank=True, related_name="accounts"
+    )
+    users = TreeManyToManyField(User, blank=True, related_name="account")
 
     def __str__(self):
         return self.name
@@ -135,8 +145,8 @@ class AccountSettings(TimeStampedModel):
     account = models.OneToOneField(
         Account, on_delete=models.CASCADE, related_name="acount_settings"
     )
-    currency = models.CharField(max_length=128, blank=True)
-    time_zone = models.CharField(max_length=128, blank=True)
+    currency = models.CharField(_("Currency"), max_length=128, blank=True)
+    time_zone = models.CharField(_("Time Zone"), max_length=128, blank=True)
 
     class Meta:
         verbose_name_plural = "Account Settings"

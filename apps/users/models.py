@@ -10,7 +10,6 @@ from model_utils.fields import StatusField
 from model_utils.models import SoftDeletableModel, TimeStampedModel
 from phonenumber_field.modelfields import PhoneNumberField
 
-from apps.accounts.models import Account
 from apps.users.managers import UserManager
 
 
@@ -30,9 +29,6 @@ class User(AbstractUser, TimeStampedModel, SoftDeletableModel):
     last_name = models.CharField(_("Last Name of User"), blank=True, max_length=255)
     email = models.EmailField(_("Email address"), unique=True)
     username = None  # type: ignore
-    account = models.ForeignKey(
-        Account, on_delete=models.SET_NULL, blank=True, null=True, related_name="users"
-    )
     created_by = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -52,8 +48,8 @@ class User(AbstractUser, TimeStampedModel, SoftDeletableModel):
 
 class Profile(TimeStampedModel, SoftDeletableModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    phone_number = PhoneNumberField(blank=True)
-    address = models.CharField(max_length=255, blank=True)
+    phone_number = PhoneNumberField(_("User's Phone Number"), blank=True)
+    address = models.CharField(_("Users Address"), max_length=255, blank=True)
     avatar = ProcessedImageField(
         upload_to=user_directory_path,
         processors=[ResizeToFill(200, 200)],
@@ -75,7 +71,7 @@ class Settings(TimeStampedModel):
     THEMES = Choices("dark", "light")
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
-    theme = StatusField(choices_name="THEMES", default="dark")
+    theme = StatusField(_("Preffered Theme"), choices_name="THEMES", default="dark")
 
     class Meta:
         verbose_name = "User Setting"

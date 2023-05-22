@@ -1,11 +1,9 @@
-from django.conf import settings
+from axes.signals import user_locked_out
 from django.contrib.auth import get_user_model
-from django.core.mail import EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template.loader import render_to_string
-from djoser.signals import user_activated
 from notifications.signals import notify
+from rest_framework.exceptions import PermissionDenied
 
 from apps.users.models import Profile, Settings
 
@@ -48,13 +46,11 @@ def user_welcome_message(sender, **kwargs):
         notify.send(instance, recipient=instance, verb=WELCOME_MESSAGE, level="success")
 
 
-@receiver(user_activated)
-def user_welcome_email(sender, user, request, **kwargs):
-    subject = "Welcome to Haft Manager App!"
-    from_email = settings.EMAIL_HOST_USER
-    to_email = user.email
-    text_content = render_to_string("welcome_email.txt", {"user": user})
-    html_content = render_to_string("welcome_email.html", {"user": user})
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to_email])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send(fail_silently=False)
+# axes rate limit for DRF
+@receiver(user_locked_out)
+def raise_permission_denied(*args, **kwargs):
+    # checking the path to disable this function if request is not from DRF
+    request = kwargs.get("request")
+    if request.META["PATH_INFO"] == "/admin/login/":
+        return
+    raise PermissionDenied("Too many failed login attempts")

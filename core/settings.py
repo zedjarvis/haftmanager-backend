@@ -37,6 +37,8 @@ INTERNAL_IPS = ["127.0.0.1"]
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 
 AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "apps.users.auth_backend.EmailOrUsernameAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -53,6 +55,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    "axes",
     "mptt",
     "django_celery_beat",  # TODO: CONFIGURE
     "rest_framework",
@@ -160,6 +163,22 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Africa/Nairobi"
 
+AXES_LOCKOUT_PARAMETERS = [
+    ["username", "user_agent"],
+]
+AXES_ENABLED = True
+AXES_VERBOSE = False
+AXES_LOCKOUT_URL = "/admin"
+AXES_FAILURE_LIMIT = 5
+AXES_LOCK_OUT_AT_FAILURE = True
+AXES_COOLOFF_TIME = timedelta(hours=1)
+AXES_LOCKOUT_URL = None
+AXES_NEVER_LOCKOUT_GET = True
+AXES_RESET_ON_SUCCESS = False
+AXES_ALLOWED_CORS_ORIGINS = "*"
+AXES_ACCESS_FAILURE_LOG_PER_USER_LIMIT = 100
+
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -171,6 +190,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
 
 AUTH_USER_MODEL = "users.User"

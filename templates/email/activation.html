@@ -1,0 +1,50 @@
+{% load i18n %} {% block subject %} {% blocktrans %}Welcome to {{ site_name }}!
+Activate your Account Now.{% endblocktrans %} {% endblock subject %} {% block
+text_body %} {% blocktrans %} Welcome to HaftManager, your ultimate project
+management solution! We're thrilled to have you on board. To get started, please
+activate your account by clicking the link below: {% endblocktrans %} {{
+protocol }}://{{ domain }}/{{ url|safe }} {% blocktrans %}By activating your
+account, you'll gain access to a powerful set of features to efficiently manage
+your projects, tasks, teams, and more. HaftManager simplifies project
+collaboration and streamlines your workflow, ensuring successful project
+delivery.{% endblocktrans %} {% blocktrans %}If you have any questions or need
+assistance, our dedicated support team is here to help. Simply reach out to
+[Support Email] with your inquiries, and we'll be glad to assist you.{%
+endblocktrans %} {% blocktrans %}Thank you for choosing HaftManager. Let's
+embark on a journey of productive project management together!{% endblocktrans
+%} {% trans "Best regards," %} {% blocktrans %}The {{ site_name }} team{%
+endblocktrans %} {% endblock text_body %} {% block html_body %}
+<p>
+  {% blocktrans %}Welcome to HaftManager, your ultimate project management
+  solution! We're thrilled to have you on board. To get started, please activate
+  your account by clicking the link below:{% endblocktrans %}
+</p>
+<p>
+  <a href="{{ protocol }}://{{ domain }}/{{ url|safe }}"
+    >{{ protocol }}://{{ domain }}/{{ url|safe }}</a
+  >
+</p>
+
+<p>
+  {% blocktrans %}By activating your account, you'll gain access to a powerful
+  set of features to efficiently manage your projects, tasks, teams, and more.
+  HaftManager simplifies project collaboration and streamlines your workflow,
+  ensuring successful project delivery.{% endblocktrans %}
+</p>
+
+<p>
+  {% blocktrans %}If you have any questions or need assistance, our dedicated
+  support team is here to help. Simply reach out to [Support Email] with your
+  inquiries, and we'll be glad to assist you.{% endblocktrans %}
+</p>
+
+<p>
+  {% blocktrans %}Thank you for choosing HaftManager. Let's embark on a journey
+  of productive project management together!{% endblocktrans %}
+</p>
+
+<p>{% trans "Best regards," %}</p>
+
+<p>{% blocktrans %}The {{ site_name }} team{% endblocktrans %}</p>
+
+{% endblock html_body %}

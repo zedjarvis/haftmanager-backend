@@ -15,12 +15,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 APPS_DIR = BASE_DIR / "apps"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="$1c1dby1y#fnyiew&8vj%*(8")
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=True, cast=bool)
 
-ADMINS = (("Cedrouseroll Omondi", "omondicedo@haftstudio.ke"),)
+# USER INFO
+ADMIN_USERNAME = config("ADMIN_USERNAME")
+ADMIN_EMAIL = config("ADMIN_EMAIL")
+
+ADMINS = ((ADMIN_USERNAME, ADMIN_EMAIL),)
 
 ADMIN_URL = "admin/"
 
@@ -156,12 +160,13 @@ PHONENUMBER_DEFAULT_REGION = "KE"
 PHONENUMBER_DEFAULT_FORMAT = "INTERNATIONAL"
 
 # CELERY related settings
-BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "Africa/Nairobi"
+CELERY_TIMEZONE = config("TIME_ZONE", default="UTC")
+
 
 AXES_LOCKOUT_PARAMETERS = [
     ["username", "user_agent"],
@@ -248,7 +253,7 @@ IGNORABLE_404_URLS = [
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": config("CACHE_LOCATION"),
     }
 }
 
@@ -357,7 +362,7 @@ if RUN_MODE == "production":
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST_ADDR = config("EMAIL_HOST")
     EMAIL_HOST = socket.gethostbyname(EMAIL_HOST_ADDR)  # Speed up sending emails
-    EMAIL_PORT = 465
+    EMAIL_PORT = config("EMAIL_PORT")
     EMAIL_HOST_USER = config("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
@@ -383,4 +388,4 @@ if RUN_MODE == "production":
 else:
     # send emails to console
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    DEFAULT_FROM_EMAIL = "webmaster@haftstudio.ke"
+    DEFAULT_FROM_EMAIL = config("EMAIL_HOST_USER")

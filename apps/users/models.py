@@ -1,9 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from imagekit.models import (
-    ProcessedImageField,
-)  # imagekit for processings images in django
+from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from model_utils import Choices
 from model_utils.fields import StatusField
@@ -28,7 +26,7 @@ class User(AbstractUser, TimeStampedModel, SoftDeletableModel):
     first_name = models.CharField(_("First Name of User"), blank=True, max_length=255)
     last_name = models.CharField(_("Last Name of User"), blank=True, max_length=255)
     email = models.EmailField(_("Email address"), unique=True)
-    username = None  # type: ignore
+    username = models.CharField(_("User Name"), blank=True, null=True, unique=True)
     created_by = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -43,7 +41,7 @@ class User(AbstractUser, TimeStampedModel, SoftDeletableModel):
     objects = UserManager()
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+        return self.email
 
 
 class Profile(TimeStampedModel, SoftDeletableModel):

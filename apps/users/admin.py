@@ -1,10 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin
-from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from apps.users.forms import UserAdminChangeForm, UserAdminCreationForm
-from apps.users.models import User, Profile, Settings
+from apps.users.models import Profile, Settings, User
 
 
 @admin.register(User)
@@ -12,8 +11,8 @@ class UserAdmin(auth_admin.UserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        (None, {"fields": ("username", "email")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "created_by")}),
         (
             _("Permissions"),
             {

@@ -5,7 +5,6 @@ from django.utils.translation import gettext_lazy as _
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from model_utils.models import SoftDeletableModel, TimeStampedModel
-from mptt.models import MPTTModel, TreeManyToManyField
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
@@ -29,7 +28,7 @@ class Industry(TimeStampedModel, SoftDeletableModel):
 
 
 # different accounts[companies/individual]
-class Account(MPTTModel, TimeStampedModel, SoftDeletableModel):
+class Account(TimeStampedModel, SoftDeletableModel):
     name = models.CharField(_("Name of Company or Individual"), max_length=255)
     website = models.URLField(_("Your Website"), max_length=255)
     description = models.TextField(
@@ -47,13 +46,21 @@ class Account(MPTTModel, TimeStampedModel, SoftDeletableModel):
         format="JPEG",
         options={"quality": 80},
     )
-    industry = TreeManyToManyField(Industry, blank=True, related_name="accounts")
-    users = TreeManyToManyField(User, blank=True, related_name="account")
+    industry = models.ManyToManyField(Industry, blank=True, related_name="accounts")
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="accounts_created",
+    )
+    users = models.ManyToManyField(User, blank=True, related_name="account")
 
     def __str__(self):
         return self.name
 
 
+# TODO : add created_by and modified_by fields to both phone and email models
 class Phone(TimeStampedModel):
     phone_number = PhoneNumberField(blank=True)
     is_primary = models.BooleanField(default=False)
@@ -137,7 +144,7 @@ class Email(TimeStampedModel, SoftDeletableModel):
 
 class AccountSettings(TimeStampedModel):
     account = models.OneToOneField(
-        Account, on_delete=models.CASCADE, related_name="acount_settings"
+        Account, on_delete=models.CASCADE, related_name="account_settings"
     )
     currency = models.CharField(_("Currency"), max_length=128, blank=True)
     time_zone = models.CharField(_("Time Zone"), max_length=128, blank=True)

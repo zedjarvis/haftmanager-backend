@@ -42,7 +42,7 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv(
 
 AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesStandaloneBackend",
-    "apps.users.auth_backend.EmailOrUsernameAuthBackend",
+    # "apps.users.auth_backend.EmailOrUsernameAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 

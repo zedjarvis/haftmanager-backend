@@ -28,7 +28,7 @@ repos:
     hooks:
       - id: prettier
         args: ['--tab-width', '2', '--single-quote']
-        exclude: 'haftmanager_backend/apps/templates/'
+        exclude: 'haftmanager_backend/templates/'
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.4.0

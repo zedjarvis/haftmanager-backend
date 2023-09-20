@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -16,17 +17,18 @@ def user_directory_path(instance, filename):
     return f"users/user-{instance.pk}/{filename}"
 
 
+# TODO: ADD DJANGO GUARDIAN FOR PERMISSION / ANY RELEVANT 3RD PARTY APP
 class User(AbstractUser, TimeStampedModel, SoftDeletableModel):
     """
-    Default custom user model for haftmanager-backend.
+    Default custom user model for promanager-backend.
     If adding fields that need to be filled at user signup,
     check forms.SignupForm and forms.SocialSignupForms accordingly.
     """
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(_("First Name of User"), blank=True, max_length=255)
     last_name = models.CharField(_("Last Name of User"), blank=True, max_length=255)
     email = models.EmailField(_("Email address"), unique=True)
-    username = models.CharField(_("User Name"), blank=True, null=True, unique=True)
+    username = None
     created_by = models.ForeignKey(
         "self",
         on_delete=models.SET_NULL,
@@ -67,9 +69,11 @@ class Profile(TimeStampedModel, SoftDeletableModel):
 
 class Settings(TimeStampedModel):
     THEMES = Choices("dark", "light")
+    LAYOUT = Choices("sidenav", "topnav")
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="settings")
     theme = StatusField(_("Preffered Theme"), choices_name="THEMES", default="dark")
+    layout = StatusField(_("Preffered Layout"), choices_name="LAYOUT", default="sidenav")
 
     class Meta:
         verbose_name = "User Setting"

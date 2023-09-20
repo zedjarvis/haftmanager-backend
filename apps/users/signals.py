@@ -10,7 +10,7 @@ from apps.users.models import Profile, Settings
 User = get_user_model()
 
 WELCOME_MESSAGE = (
-    "Welcome to Halfmanager! We're excited to have you on board and "
+    "Welcome to ProManager! We're excited to have you on board and "
     "look forward to helping you manage your projects efficiently. "
     "If you have any questions or feedback, don't hesitate to reach "
     "out to our support team. Happy managing!"

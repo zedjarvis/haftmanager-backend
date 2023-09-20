@@ -61,6 +61,7 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "axes",
     "mptt",
+    "notifications",
     "django_celery_beat",  # TODO: CONFIGURE
     "rest_framework",
     "rest_framework_simplejwt",
@@ -68,14 +69,13 @@ THIRD_PARTY_APPS = [
     "djoser",  # TODO: SOCIAL AUTH CONFIG
     "drf_spectacular",
     "drf_spectacular_sidecar",
-    "notifications",  # TODO: WORK ON NOTIFICATIONS
     "django_cleanup",
     "imagekit",
     "storages",
     "phonenumber_field",
 ]
 
-LOCAL_APPS = ["apps.users", "apps.accounts", "apps.notify"]
+LOCAL_APPS = ["apps.users", "apps.accounts", "apps.notification"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -124,8 +124,8 @@ REST_FRAMEWORK = {
 # By Default swagger ui is available only to admin user(s). You can change permission classes to change that
 # See more configuration options at https://drf-spectacular.readthedocs.io/en/latest/settings.html#settings
 SPECTACULAR_SETTINGS = {
-    "TITLE": "haftmanager-backend API",
-    "DESCRIPTION": "Documentation of API endpoints of haftmanager-backend",
+    "TITLE": "ProManager-backend API",
+    "DESCRIPTION": "Documentation of API endpoints of ProManager-backend",
     "VERSION": "1.0.0",
     "COMPONENT_SPLIT_REQUEST": True,
     "ENUM_ADD_EXPLICIT_BLANK_NULL_CHOICE": True,
@@ -136,9 +136,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 DJOSER = {
-    "PASSWORD_RESET_CONFIRM_URL": "accounts/password/reset/confirm/{uid}/{token}",
-    "USERNAME_RESET_CONFIRM_URL": "accounts/username/reset/confirm/{uid}/{token}",
-    "ACTIVATION_URL": "accounts/activate/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "auth/password/reset/confirm/{uid}/{token}",
+    "USERNAME_RESET_CONFIRM_URL": "auth/username/reset/confirm/{uid}/{token}",
+    "ACTIVATION_URL": "auth/activate/{uid}/{token}",
     "SEND_ACTIVATION_EMAIL": True,
     "SEND_CONFIRMATION_EMAIL": True,
     "HIDE_USERS": True,
@@ -169,12 +169,11 @@ CELERY_TIMEZONE = config("TIME_ZONE", default="UTC")
 
 
 AXES_LOCKOUT_PARAMETERS = [
-    ["username", "user_agent"],
+    ["ip_address", "user_agent"],
 ]
 AXES_ENABLED = True
 AXES_VERBOSE = False
-AXES_LOCKOUT_URL = "/admin"
-AXES_FAILURE_LIMIT = 5
+AXES_FAILURE_LIMIT = 3
 AXES_LOCK_OUT_AT_FAILURE = True
 AXES_COOLOFF_TIME = timedelta(hours=1)
 AXES_LOCKOUT_URL = None
@@ -255,6 +254,18 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": config("CACHE_LOCATION"),
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "ROUTING": "???",
+        "CONFIG": {
+            "hosts": [
+                ("127.0.0.1", 6379),
+            ],
+        },
+    },
 }
 
 DATABASES = {

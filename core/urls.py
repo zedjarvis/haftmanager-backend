@@ -2,16 +2,13 @@
 URL configuration for core project.
 
 """
+from django.conf import settings
+from django.conf.urls import include
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, re_path
-from django.conf.urls import include
-from django.conf import settings
-from django.conf.urls.static import static
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
+                                   SpectacularSwaggerView)
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
@@ -29,8 +26,9 @@ urlpatterns = [
     ),
 ]
 
-API_AUTH = r"^api/auth/"
+
 API_BASE = r"^api/v1/"
+API_AUTH = r"^api/v1/auth/"
 
 # API URLS
 urlpatterns += [

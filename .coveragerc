@@ -1,0 +1,14 @@
+[run]
+branch = True
+omit = *migrations*,
+       *urls*,
+       *test*,
+       *admin*,
+       ./manage.py,
+       ./core/*,
+       ./local/*,
+       ./media/*,
+       ./requirements/*,
+       ./templates/*,
+       ./compose/*,
+       *__init__*

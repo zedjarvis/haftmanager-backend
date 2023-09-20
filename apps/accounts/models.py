@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
@@ -9,12 +10,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
-User = get_user_model()
-
 
 def account_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return f"accounts/{instance.name}-{instance.pk}/{filename}"
+    # file will be uploaded to MEDIA_ROOT/accounts/account_<id>/<filename>
+    return f"accounts/account_{instance.pk}/{filename}"
 
 
 class Industry(TimeStampedModel, SoftDeletableModel):
@@ -47,14 +46,14 @@ class Account(TimeStampedModel, SoftDeletableModel):
         options={"quality": 80},
     )
     industry = models.ManyToManyField(Industry, blank=True, related_name="accounts")
+    users = models.ManyToManyField(to=settings.AUTH_USER_MODEL, related_name="user_accounts", blank=True)
     created_by = models.ForeignKey(
-        User,
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="accounts_created",
     )
-    users = models.ManyToManyField(User, blank=True, related_name="account")
 
     def __str__(self):
         return self.name
@@ -66,6 +65,13 @@ class Phone(TimeStampedModel):
     is_primary = models.BooleanField(default=False)
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="phones"
+    )
+    created_by = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="phones_created",
     )
 
     class Meta:
@@ -86,16 +92,16 @@ class Phone(TimeStampedModel):
 
         if not self.pk:
             account_phones = self.account.phones.count()
-            # raise a validation error if this account already has 2 phone numbers
             if account_phones >= 2:
                 raise ValidationError(
                     "An account can only have a maximum of 2 phone numbers"
                 )
-            # raise a validation error if there is already a primary phone for this account
             if self.is_primary and primary_phones > 0:
                 raise ValidationError(
                     "An account can only have one primary phone number"
                 )
+        if self.is_primary and primary_phones > 0:
+            raise ValidationError("An account can only have one primary phone number")
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -107,6 +113,13 @@ class Email(TimeStampedModel, SoftDeletableModel):
     is_primary = models.BooleanField(default=False)
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="emails"
+    )
+    created_by = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="emails_created",
     )
 
     class Meta:
@@ -136,6 +149,8 @@ class Email(TimeStampedModel, SoftDeletableModel):
                 raise ValidationError(
                     "An account can only have one primary eamil adress."
                 )
+        if self.is_primary and primary_emails > 0:
+            raise ValidationError("An account can only have one primary emaill adress.")
 
     def save(self, *args, **kwargs):
         self.clean()

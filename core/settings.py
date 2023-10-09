@@ -49,6 +49,7 @@ AUTHENTICATION_BACKENDS = [
 # Application definition
 DJANGO_APPS = [
     "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -65,8 +66,10 @@ THIRD_PARTY_APPS = [
     "django_celery_beat",  # TODO: CONFIGURE
     "rest_framework",
     "rest_framework_simplejwt",
+    'rest_framework_simplejwt.token_blacklist',
     "corsheaders",
     "djoser",  # TODO: SOCIAL AUTH CONFIG
+    "generic_relations",
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "django_cleanup",
@@ -107,7 +110,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOWED_ORIGINS = (
     # TODO - set this properly for production
     "http://localhost:8000",
-    "http://localhost:3000",
+    "http://localhost:5277",
 )
 
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
@@ -138,8 +141,10 @@ SPECTACULAR_SETTINGS = {
 DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "auth/password/reset/confirm/{uid}/{token}",
     "USERNAME_RESET_CONFIRM_URL": "auth/username/reset/confirm/{uid}/{token}",
-    "ACTIVATION_URL": "auth/activate/{uid}/{token}",
-    "SEND_ACTIVATION_EMAIL": True,
+    "ACTIVATION_URL": "localhost:5277/auth/account/activate/{uid}/{token}",
+    "INVITE_ACTIVATION_URL": "localhost:5277/auth/account/activate/invite/{uid}/{token}",
+    "PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND": True,
+    "SEND_ACTIVATION_EMAIL": False,
     "SEND_CONFIRMATION_EMAIL": True,
     "HIDE_USERS": True,
     "SERIALIZERS": {
@@ -151,7 +156,7 @@ DJOSER = {
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "UPDATE_LAST_LOGIN": True,
 }
 
@@ -171,7 +176,7 @@ CELERY_TIMEZONE = config("TIME_ZONE", default="UTC")
 AXES_LOCKOUT_PARAMETERS = [
     ["ip_address", "user_agent"],
 ]
-AXES_ENABLED = True
+AXES_ENABLED = False
 AXES_VERBOSE = False
 AXES_FAILURE_LIMIT = 3
 AXES_LOCK_OUT_AT_FAILURE = True

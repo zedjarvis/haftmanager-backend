@@ -5,8 +5,7 @@ from apps.users.api.serializers import UserSerializer
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-    actor = UserSerializer(required=False, allow_null=True)
-
+    # actor = UserSerializer(required=False, allow_null=True)
     class Meta:
         model = Notification
         fields = [
@@ -17,7 +16,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             "unread",
             "timestamp",
             "data",
-            "actor",
-            "action_object",
-            "target",
+            # "actor",
+            # "action_object",
+            # "target",
         ]

@@ -14,7 +14,15 @@ class NotificationViewset(ModelViewSet):
     def get_queryset(self) -> QuerySet:
         user = self.get_instance()
         qs = super().get_queryset()
-        return qs.filter(recipient=user, deleted=False, public=True)
+        return qs.filter(deleted=False, public=True)
 
     def get_instance(self):
         return self.request.user
+    
+    @action(methods=["GET"], detail=False)
+    def me(self, request, *args, **kwargs):
+        user = self.get_instance()
+        notifications = self.get_queryset().filter(recipient=user)
+        serializer = NotificationSerializer(notifications, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)

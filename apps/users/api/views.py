@@ -3,6 +3,7 @@ from rest_framework.decorators import action  # noqa: F401
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response  # noqa: F401
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.tokens import RefreshToken
 from djoser.compat import get_user_email
 
 

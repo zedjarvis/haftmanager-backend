@@ -1,10 +1,10 @@
 from django.contrib.auth.tokens import default_token_generator
+from django.conf import settings
 from templated_mail.mail import BaseEmailMessage
 
 from djoser import utils
 from djoser.conf import settings
 
-INVITE_ACTIVATION_URL = "auth/invite/activate/{uid}/{token}"
 
 class InvitationEmail(BaseEmailMessage):
     template_name = "email/invitation.html"
@@ -16,7 +16,7 @@ class InvitationEmail(BaseEmailMessage):
         context["to_user"] = user.first_name
         context["uid"] = utils.encode_uid(user.pk)
         context["token"] = default_token_generator.make_token(user)
-        context["url"] = INVITE_ACTIVATION_URL.format(**context)
+        context["url"] = settings.DJSOSER["INVITE_ACTIVATION_URL"].format(**context)
 
         return context
 

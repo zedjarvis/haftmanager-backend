@@ -38,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
             "created_by",
             "profile",
         ]
-        read_only_fields = ("id",)
+        read_only_fields = ("id", "created_by")
 
 
 class InviteUserMixin:
